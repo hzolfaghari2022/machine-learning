@@ -1,0 +1,1188 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A Beamer template for University of Wollongong     %
+% Based on THU beamer theme                          %
+% Author: Qiuyu Lu                                   %
+% Date: July 2024                                    %
+% LPPL Licensed.                                     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Customized for Sharif University of Technology     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[serif, aspectratio=169]{beamer}
+%\documentclass[serif]{beamer}  % for 4:3 ratio
+\usepackage[T1]{fontenc} 
+\usepackage{fourier} % see "http://faq.ktug.org/wiki/uploads/MathFonts.pdf" for other options
+\usepackage{hyperref}
+\usepackage{latexsym,amsmath,xcolor,multicol,booktabs,calligra}
+\usepackage{graphicx,pstricks,listings,stackengine}
+\usepackage{lipsum}
+\usepackage{tikz}
+
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{ragged2e}
+
+\author{Ali Sharifi-Zarchi}
+% \author{CE Department}
+\title{Machine Learning (CE 40477)}
+\subtitle{Fall 2024}
+\institute{
+    CE Department \\
+    Sharif University of Technology
+}
+%\date{\small \today}
+% \usepackage{UoWstyle}
+\usepackage{SUTstyle}
+
+% defs
+\def\cmd#1{\texttt{\color{red}\footnotesize $\backslash$#1}}
+\def\env#1{\texttt{\color{blue}\footnotesize #1}}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{RGB}{153,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{halfgray}{gray}{0.55}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\bfseries\color{deepblue},
+    emphstyle=\ttfamily\color{deepred},    % Custom highlighting style
+    stringstyle=\color{deepgreen},
+    numbers=left,
+    numberstyle=\small\color{halfgray},
+    rulesepcolor=\color{red!20!green!20!blue!20},
+    frame=shadowbox,
+}
+
+\begin{document}
+
+%------------------------------------------------slide1
+\begin{frame}
+    \titlepage
+    \vspace*{-0.6cm}
+    \begin{figure}[htpb]
+        \begin{center}
+            \includegraphics[keepaspectratio, scale=0.25]{pic/sharif-main-logo.png}
+        \end{center}
+    \end{figure}
+\end{frame}
+%------------------------------------------------slide2
+\begin{frame}    
+\tableofcontents[sectionstyle=show,
+subsectionstyle=show/shaded/hide,
+subsubsectionstyle=show/shaded/hide]
+\end{frame}
+%------------------------------------------------slide3
+\section{Overview}
+\begin{frame}{Parametric vs. Non-Parametric Methods}
+    \begin{itemize}
+        \item \textbf{Parametric} methods \textbf{learn parameters} from data and then use these inferred parameters to make predictions on new data points.
+        \begin{itemize}
+            \item \textbf{Learning:} estimating parameters from data.
+            \item Examples include \textbf{Linear Regression} and \textbf{Logistic Regression}.
+        \end{itemize}
+
+        \item \textbf{Non-parametric} methods:
+        \begin{itemize}
+            \item Training examples are used \textbf{directly}.
+            \item A separate \textbf{training phase} is \textbf{not required}.
+            \item Example: \textbf{k-Nearest Neighbors (kNN)}.
+        \end{itemize}
+
+        \item Both supervised and unsupervised learning methods can be categorized as either parametric or non-parametric.
+    \end{itemize}
+\end{frame}
+
+%------------------------------------------------slide4
+\begin{frame}{Outline}
+    \textbf{Non-Parametric Approach}
+    \begin{itemize}
+        \item \textbf{Unsupervised: Non-Parametric Density Estimation}
+        \begin{itemize}
+            \item Parzen Windows.
+            \item k-Nearest Neighbor Density Estimation.
+        \end{itemize}
+
+        \item \textbf{Supervised: Instance-Based Learners}
+        \begin{itemize}
+            \item Classification:
+            \begin{itemize}
+                \item kNN Classification.
+                \item Weighted (or Kernel) kNN.
+            \end{itemize}
+            \item Regression:
+            \begin{itemize}
+                \item kNN Regression.
+                \item Locally Linear Weighted Regression.
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+%------------------------------------------------slide5
+
+%------------------------------------------------slide6
+
+\section{k-Nearest Neighbor}
+
+\begin{frame}{kNN Concept}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.6\textwidth]{pic/Saadi.png}
+\end{figure}
+
+\begin{itemize}
+    \item “First, tell me who you have lived with, and then I will tell you who you are.”
+\end{itemize}
+
+\begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=south west, xshift=0.1cm, yshift=0.22cm] at (current page.south west) {
+        \scriptsize Figure adapted from https://setare.com
+    };
+\end{tikzpicture}
+
+\end{frame}
+
+%--------------------------------slide7
+\begin{frame}{k-Nearest Neighbor (kNN)}
+
+\begin{minipage}{0.5\textwidth}
+    \begin{itemize}
+        \item \textbf{kNN Classifier:} considers the $k \geq 1$ nearest neighbors of a query point.
+        \begin{itemize}
+            \item The label of $\mathbf{x}$ is predicted by \textbf{majority voting} among its $k$ nearest neighbors.
+        \end{itemize}
+        \item Example: $k = 5$, $\mathbf{x} = [x_1, x_2]$
+    \end{itemize}
+\end{minipage}%
+\begin{minipage}{0.45\textwidth}
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth]{pic/kE5.png}
+    \end{figure}
+
+    \vfill
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=south west, xshift=0.01cm, yshift=0.22cm] at (current page.south west) {
+            \scriptsize Figure adapted from M. Soleymani, ML slides, Sharif University of Technology.
+        };
+    \end{tikzpicture}
+\end{minipage}
+
+\end{frame}
+
+%------------------------------------------------slide8
+\begin{frame}{k-Nearest Neighbor (kNN) Classifier}
+
+\begin{itemize}
+    \item \textbf{Given:}
+    \begin{itemize}
+        \item Training data $\{(\mathbf{x}^{(1)}, \mathbf{y}^{(1)}), \dots, (\mathbf{x}^{(n)}, y^{(n)})\}$ are stored directly (no model parameters are learned).
+    \end{itemize}
+
+    \item \textbf{To classify a new sample} $\mathbf{x}$:
+    \begin{itemize}
+        \item Find the $k$ nearest training samples to $\mathbf{x}$.
+        \item Among these $k$ samples, count how many $k_j$ belong to each class $C_j$ ($j = 1, \dots, C$).
+        \item Assign $\mathbf{x}$ to the class $C_{j^*}$, where
+        \[
+        j^* = \underset{j = 1, \dots, C}{\arg\max} \, k_j.
+        \]
+    \end{itemize}
+
+    \item The kNN algorithm is considered a \textbf{discriminative} method.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide9
+\begin{frame}{k-Nearest Neighbor (kNN) Classifier}
+
+\begin{itemize}
+    \item The \textbf{kNN classifier} can produce \textbf{non-linear decision boundaries}, unlike previous methods such as linear and logistic regression.
+    
+    \item However, this method can be quite sensitive to \textbf{outliers} or \textbf{noisy data}, particularly when:
+    \begin{itemize}
+        \item The dataset is \textbf{small}.
+        \item The data are \textbf{low-dimensional}.
+        \item A \textbf{small value of $k$} is used --- for instance, when $k = 1$, the prediction depends only on the single nearest neighbor, which can be misleading in many test cases.
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide10
+\begin{frame}{kNN Example}
+
+\begin{itemize}
+    \item We aim to classify a new document and assign it to one of three categories by examining its neighboring samples.
+\end{itemize}
+
+\begin{columns}
+    \column{0.33\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{pic/knn1.png}
+    \column{0.33\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{pic/knn2.png}
+    \column{0.33\textwidth}
+        \centering
+        \includegraphics[width=0.9\textwidth]{pic/knn3.png}
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------slide11
+\begin{frame}{kNN Example}
+
+\begin{columns}
+    \column{0.5\textwidth}
+    \small
+    \centering
+    \textbf{1-Nearest Neighbor} \\[0.3em]
+    \includegraphics[width=0.46\textwidth]{pic/knn4.png} \\[0.6em]
+    \textbf{3-Nearest Neighbors} \\[0.3em]
+    \includegraphics[width=0.46\textwidth]{pic/knn6.png}
+    
+    \column{0.5\textwidth}
+    \small
+    \centering
+    \textbf{2-Nearest Neighbors} \\[0.3em]
+    \includegraphics[width=0.46\textwidth]{pic/knn5.png} \\[0.6em]
+    \textbf{5-Nearest Neighbors} \\[0.3em]
+    \includegraphics[width=0.46\textwidth]{pic/knn7.png}
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------slide12
+\begin{frame}{Voronoi Tessellation}
+
+\begin{itemize}
+    \item \textbf{Voronoi Tessellation:}
+    \begin{itemize}
+        \item Each cell contains all points that are closer to a given training sample than to any other sample.
+        \item All points within a cell share the label of the corresponding training sample.
+    \end{itemize}
+\end{itemize}
+
+\begin{center}
+    \includegraphics[width=0.35\textwidth]{pic/Voroni.png}
+\end{center}
+
+\end{frame}
+
+%------------------------------------------------slide13
+\begin{frame}{Voronoi Tessellation}
+
+\begin{itemize}
+    \item The 1-NN decision regions form a Voronoi tessellation.
+\end{itemize}
+
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{pic/1NNVoronoi.png}
+\end{center}
+
+\vfill
+
+\begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=south west, xshift=0.01cm, yshift=0.22cm] at (current page.south west) {
+        \scriptsize Figure adapted from R.~Zhu, ``Stat~542: Statistical Learning -- $k$-Nearest Neighbor and the Bias--Variance Trade-Off,'' Lecture Notes.
+    };
+\end{tikzpicture}
+
+\end{frame}
+
+%------------------------------------------------slide14
+\begin{frame}{Reducing Complexity: Editing 1-NN}
+
+\begin{itemize}
+    \item If all Voronoi neighbors of a sample belong to the same class, that sample is redundant and can be safely removed.
+\end{itemize}
+
+\begin{center}
+    \includegraphics[width=0.7\textwidth]{pic/complexity1.png}
+\end{center}
+
+\vspace{0.5em}
+
+\begin{itemize}
+    \item The number of stored samples decreases.
+    \item The decision boundaries are guaranteed to remain unchanged.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide15
+\begin{frame}{Nearest Neighbor Classifier: Error Bound}
+
+\begin{columns}
+   \column{0.6\textwidth}
+\begin{itemize}
+    \item \textbf{Nearest Neighbor:} kNN with $k = 1$.
+    \begin{itemize}
+        \item \textbf{Decision rule:}
+        \[
+        \hat{y} = y^{NN(\mathbf{x})} 
+        \quad \text{where} \quad 
+        NN(x) = \arg\min_{i = 1, \dots, N} \left\| \mathbf{x} - \mathbf{x}^{(i)} \right\|.
+        \]
+    \end{itemize}
+    
+    \item \textbf{Cover \& Hart (1967):}  
+    The asymptotic risk of the NN classifier satisfies
+    \[
+        R^* \le R_{\infty}^{NN} \le 2R^*(1 - R^*) \le 2R^*.
+    \]
+    
+    \begin{itemize}
+        \item[] $R_n$: expected risk of the NN classifier with $n$ training examples drawn from $\mathbb{P}(\mathbf{x}, \mathbf{y})$.
+        \vspace{0.3em}
+        \item[] $R_{\infty}^{NN} = \lim_{n \to \infty} R_n^{NN}$.
+        \vspace{0.3em}
+        \item[] $R^*$: the optimal Bayes risk.
+    \end{itemize}
+\end{itemize}
+
+   \column{0.4\textwidth}
+   \centering
+   \includegraphics[width=\textwidth]{pic/error.png}
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------slide16
+\begin{frame}{Cover \& Hart (1967)}
+    \centering
+    \includegraphics[width=0.5\textwidth]{pic/Hart.png}
+
+    \vspace{0.5em}
+
+    \href{https://isl.stanford.edu/~cover/papers/transIT/0021cove.pdf}{\small\texttt{isl.stanford.edu/\string~cover/papers/transIT/0021cove.pdf}}
+\end{frame}
+
+%------------------------------------------------slide17
+\begin{frame}{Bayes Optimal Classifier}
+
+Assume (although this is almost never the case) that we know $\mathbb{P}(y \mid \mathbf{x})$.  
+Then, we can simply predict the most likely label.
+
+\[
+\text{The Bayes optimal classifier predicts:} \quad 
+y^* = \arg\max_{y} \mathbb{P}(y \mid \mathbf{x})
+\]
+
+Although the Bayes optimal classifier performs as well as possible, it can still make mistakes.  
+It is wrong whenever a sample does not belong to the most likely class.  
+We can compute the probability of that happening exactly, which gives the uncertainty rate:
+
+\[
+\epsilon_{\text{BayesOpt}} = 1 - \mathbb{P}(y^*(\mathbf{x}) \mid \mathbf{x}) 
+= 1 - \mathbb{P}(y^* \mid \mathbf{x})
+\]
+
+\end{frame}
+
+%------------------------------------------------slide18
+\begin{frame}{Bayes Optimal Classifier: Example}
+
+Assume, for example, that an email $\mathbf{x}$ can be classified as either spam $(+1)$ or ham $(-1)$.  
+For the same email $\mathbf{x}$, the conditional class probabilities are:
+
+\[
+\mathbb{P}(+1 \mid \mathbf{x}) = 0.8 \qquad \mathbb{P}(-1 \mid \mathbf{x}) = 0.2
+\]
+
+In this case, the Bayes optimal classifier would predict the label:
+\[
+y^* = +1
+\]
+since it is the most likely one, and its uncertainty rate would be:
+\[
+\epsilon_{\text{BayesOpt}} = 0.2
+\]
+
+\vspace{1em}
+
+Why is the Bayes optimal classifier interesting if it cannot be used in practice?  
+The reason is that it provides a highly informative lower bound on the uncertainty rate.  
+Given the same feature representation, no classifier can achieve a lower uncertainty.  
+We use this fact to analyze the error rate of the kNN classifier.
+
+\end{frame}
+
+%------------------------------------------------slide19
+\begin{frame}{1-NN Convergence Proof}
+
+\textbf{Cover and Hart (1967):}  
+As $n \rightarrow \infty$, the 1-NN error is no more than twice the uncertainty of the Bayes optimal classifier.  
+(Similar guarantees also hold for $k > 1$.)
+
+\vspace{0.7em}
+
+\hspace{2.5cm} $n$ small \hspace{2.5cm} $n$ large \hspace{2.6cm} $n \rightarrow \infty$
+
+\begin{center}
+    \includegraphics[width=0.55\textwidth]{pic/k1proof1.png}
+\end{center}
+
+\begin{itemize}
+    \item As $n \to \infty$, each test point $\mathbf{x}_t$ becomes almost identical to its nearest neighbor $\mathbf{x}_{NN}$, so
+    \[
+    \mathbb{P}(y^* \mid \mathbf{x}_t) \approx \mathbb{P}(y^* \mid \mathbf{x}_{NN}).
+    \]
+    
+    \item An error occurs only when their labels differ, with probability
+    \[
+    2\,\mathbb{P}(y^* \mid \mathbf{x}_t)\big(1 - \mathbb{P}(y^* \mid \mathbf{x}_t)\big) \leq 2\,\epsilon_{\text{BayesOpt}}.
+    \]
+    
+    \item Thus, the 1-NN error is \textbf{at most twice} the Bayes optimal uncertainty.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide20
+\begin{frame}{1-NN Convergence Proof}
+
+Let $\mathbf{x}_{NN}$ be the nearest neighbor of the test point $\mathbf{x}_t$.  
+As $n \rightarrow \infty$, the distance $\text{dist}(\mathbf{x}_{NN}, \mathbf{x}_t)$ approaches zero.
+
+\begin{align*}
+\epsilon_{NN} 
+&= \mathbb{P}(y^* \mid \mathbf{x}_t)\big(1 - \mathbb{P}(y^* \mid \mathbf{x}_{NN})\big) 
+    + \mathbb{P}(y^* \mid \mathbf{x}_{NN})\big(1 - \mathbb{P}(y^* \mid \mathbf{x}_t)\big) \\[0.5em]
+&\leq \big(1 - \mathbb{P}(y^* \mid \mathbf{x}_{NN})\big) 
+    + \big(1 - \mathbb{P}(y^* \mid \mathbf{x}_t)\big) \\[0.5em]
+&= 2\big(1 - \mathbb{P}(y^* \mid \mathbf{x}_t)\big) 
+    = 2\,\epsilon_{\text{BayesOpt}}.
+\end{align*}
+
+where the inequality follows from $\mathbb{P}(y^* \mid \mathbf{x}_t) \leq 1$,  
+and we assume that $\mathbb{P}(y^* \mid \mathbf{x}_t) = \mathbb{P}(y^* \mid \mathbf{x}_{NN})$.
+
+\end{frame}
+
+%------------------------------------------------slide21
+\begin{frame}{1-NN Convergence Proof}
+
+\begin{center}
+\small
+Possible labels: Spam, Ham (non-spam email) \\[0.3em]
+\includegraphics[width=0.55\textwidth]{pic/k1proof2.png}
+\end{center}
+
+In the limiting case, the test point and its nearest neighbor are identical.  
+There are exactly two cases in which a misclassification can occur --- when the test point and its nearest neighbor have different labels.  
+The probability of this event is given by the sum of the two red regions:
+\[
+\big(1 - \mathbb{P}(s \mid \mathbf{x})\big)\mathbb{P}(s \mid \mathbf{x}) 
+    + \mathbb{P}(s \mid \mathbf{x})\big(1 - \mathbb{P}(s \mid \mathbf{x})\big)
+    = 2\,\mathbb{P}(s \mid \mathbf{x}\big(1 - \mathbb{P}(s \mid \mathbf{x})\big).
+\]
+
+\end{frame}
+
+%------------------------------------------------slide22
+\begin{frame}{Curse of Dimensionality}
+
+\textbf{Good News:}  
+As $n \rightarrow \infty$, the 1-NN classifier performs at most twice as poorly as the best possible classifier.
+
+\medskip
+
+\textbf{Bad News:}  
+We are cursed.
+
+\medskip
+
+\textbf{Idea:}  
+The kNN classifier assumes that similar points have similar labels.  
+However, in high-dimensional spaces, randomly drawn points are rarely close to each other.
+
+\end{frame}
+
+%------------------------------------------------slide23
+\begin{frame}{Pitfalls: The Curse of Dimensionality}
+
+\begin{itemize}
+    \item Low-dimensional visualizations can be misleading. In high-dimensional spaces, most points are far apart.
+    \item If we want the nearest neighbor to be closer than $\epsilon$, how many points are required to guarantee this?
+    \item The volume of a single ball with radius $\epsilon$ is ${O}(\epsilon^d)$.
+    \item The total volume of $[0,1]^d$ is 1.
+    \item Therefore, ${O}\!\left(\left(\tfrac{1}{\epsilon}\right)^d\right)$ balls are needed to cover the entire volume.
+\end{itemize}
+
+\medskip
+
+\textbf{Example:}  
+Points are uniformly sampled within the unit cube $[0,1]^d$.  
+Let $\ell$ be the edge length of the smallest hypercube that contains all k-nearest neighbors of a test point.
+
+\begin{center}
+    \includegraphics[width=0.2\textwidth]{pic/cube.png}
+\end{center}
+
+\end{frame}
+
+%------------------------------------------------slide24
+\begin{frame}{Curse of Dimensionality}
+
+\[
+\ell^d \approx \frac{k}{n} 
+\quad \Rightarrow \quad 
+\ell \approx \left( \frac{k}{n} \right)^{1/d}.
+\]
+
+For $n = 1000$ and $k = 10$, we have:
+
+\begin{center}
+\begin{tabular}{c|c}
+\textbf{$d$} & \textbf{$\ell$} \\ \hline
+2 & 0.10 \\
+10 & 0.63 \\
+100 & 0.955 \\
+1000 & 0.9954 \\
+\end{tabular}
+\end{center}
+
+\textbf{Observation:}  
+As $d$ increases, almost the entire space is needed to find the k-nearest neighbors, breaking the fundamental assumption of the kNN classifier.
+
+\end{frame}
+
+%------------------------------------------------slide25
+\begin{frame}{Curse of Dimensionality}
+
+\textbf{Distance Distributions:}  
+The histograms below show the pairwise distances between random points in $d$-dimensional unit cubes.  
+As $d$ increases, these distances concentrate within a very narrow range, meaning that almost all points are equally far apart.
+
+\begin{center}
+    \includegraphics[width=0.6\textwidth]{pic/curse.png}
+\end{center}
+
+\end{frame}
+
+%------------------------------------------------slide26
+\begin{frame}{Curse of Dimensionality}
+
+\textbf{Consequence:}  
+In high-dimensional spaces, the “nearest” neighbors are not truly close or similar.  
+This breaks the fundamental assumption underlying the kNN classifier.
+
+\medskip
+
+\textbf{Data Growth Requirement:}  
+To make $\ell$ small, we must increase $n$:
+\[
+\ell = \tfrac{1}{10} 
+\quad \Rightarrow \quad 
+n = \frac{k}{\ell^d} = k \times 10^d.
+\]
+This quantity grows exponentially with $d$.  
+For $d > 100$, we would need more data points than there are electrons in the universe.
+
+\end{frame}
+
+%------------------------------------------------slide27
+\begin{frame}{Effect of $k$}
+
+\begin{itemize}
+    \item Compare the results for $k = 1$ and $k = 15$.
+    \item As $k$ increases, the model becomes smoother and less complex.
+\end{itemize}
+
+\begin{center}
+    \includegraphics[width=0.7\textwidth]{pic/1vs15.png}
+\end{center}
+
+\end{frame}
+
+%------------------------------------------------slide28
+\begin{frame}{Effect of $k$}
+    \begin{figure}[h]
+            \centering
+            
+            \includegraphics[width=\textwidth]{pic/effectOfK.png}
+            \end{figure}
+\end{frame}
+%------------------------------------------------slide29
+\begin{frame}{Choice of $k$}
+
+\begin{center}
+    \includegraphics[width=0.9\textwidth]{pic/K.png}
+\end{center}
+
+\begin{itemize}
+    \item \textbf{In practice:}
+    \begin{itemize}
+        \item $k$ should be large enough to minimize the overall error rate.
+        \begin{itemize}
+            \item A very small $k$ produces noisy and unstable decision boundaries.
+        \end{itemize}
+        \item $k$ should also be small enough to ensure that only nearby samples are taken into account.
+        \begin{itemize}
+            \item A very large $k$ produces overly smooth boundaries that may ignore local patterns.
+        \end{itemize}
+    \end{itemize}
+
+    \medskip
+
+    \item Balancing these two requirements is not trivial.
+    \begin{itemize}
+        \item This is a common challenge in machine learning --- we need to smooth data, but not too much.
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide30
+\begin{frame}{Choice of $k$: Example}
+
+\begin{center}
+    \includegraphics[width=0.6\textwidth]{pic/KK.png}
+\end{center}
+
+\vspace{1em}
+
+\begin{itemize}
+    \item For $k = 1, \ldots, 7$, the point $x$ is correctly classified as belonging to the red class.
+    \item For larger values of $k$, the classification of $x$ becomes incorrect, and it is assigned to the blue class.
+    \item \textbf{Bias-Variance Trade-Off in kNN:}
+    \begin{itemize}
+        \item Larger $k$ $\Rightarrow$ underfitting (high bias, low variance).
+        \item Smaller $k$ $\Rightarrow$ overfitting (low bias, high variance).
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide31
+\begin{frame}{Validation and Test Sets}
+
+\begin{itemize}
+    \item $k$ is an example of a \textbf{hyperparameter} --- a parameter that cannot be directly learned during the training process.
+    \item We can tune hyperparameters by evaluating model performance on a separate validation set.
+\end{itemize}
+
+\begin{center}
+    \includegraphics[width=0.45\textwidth]{pic/validation.png}
+\end{center}
+
+\begin{itemize}
+    \item The test set is used only once, at the very end, to evaluate the generalization performance of the final trained model.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide32
+\begin{frame}{Computational Complexity}
+
+What is the computational complexity of the kNN algorithm?
+
+\vspace{1em}
+
+\begin{itemize}
+    \item The basic kNN algorithm stores all training examples. Suppose we have $n$ examples, each with $d$ features.
+    \begin{itemize}
+        \item Computing the distance to a single example takes $O(d)$ time.
+        \item Computing distances to all $n$ examples takes $O(nd)$ time.
+        \item Selecting the $k$ nearest can be done in $O(n \log k)$ time using a \textbf{max-heap of size $k$}.
+        \item Therefore, the total time complexity of kNN classification is:
+        \[
+            O(nd + n \log k).
+        \]
+        \item For fixed small $k$, this is effectively $O(nd)$.
+    \end{itemize}
+
+    \item This becomes prohibitively expensive when the number of samples and dimensions are both large.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide33
+\begin{frame}{Reducing Complexity: kNN Prototypes}
+
+Instead of storing every individual data point, we can group similar samples together and represent each group by a prototype.  
+These prototypes are organized into search trees, where:
+
+\begin{itemize}
+    \item Each node represents a cluster of similar data points.
+    \item The root node summarizes several prototypes or subgroups.
+\end{itemize}
+
+During classification, we only search within the most relevant branches, not the entire dataset.
+
+\vspace{0.5em}
+
+\begin{itemize}
+    \item \textbf{Advantages:} The computational complexity decreases.
+    \item \textbf{Disadvantages:}
+    \begin{itemize}
+        \item Finding a good search tree is not trivial.
+        \item It may not always find the true nearest neighbor,\\
+              and therefore it is \textbf{not} guaranteed that the decision boundaries remain unchanged.
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide34
+\begin{frame}{kNN Prototypes: Example}
+
+\begin{itemize}
+    \item The tree on the left represents class 1, and the tree on the right represents class 2.
+    \item Each gray box (e.g., 147, 253) denotes a prototype node that summarizes several samples.
+    \item The child nodes can be either:
+    \begin{itemize}
+        \item Other prototypes representing subgroups, or
+        \item Individual samples.
+    \end{itemize}
+    \item In this way, the data are organized hierarchically to enable efficient search.
+\end{itemize}
+
+\vspace{0.5em}
+
+\begin{center}
+    \includegraphics[width=0.55\textwidth]{pic/complexity2.png}
+\end{center}
+
+\end{frame}
+
+%------------------------------------------------slide35
+\begin{frame}{Advantages and Disadvantages of kNN}
+
+\begin{itemize}
+  \item \textbf{Advantages:}
+  \begin{itemize}
+    \item Can be applied to data from any distribution.
+    \item Very simple and intuitive to implement.
+    \item Provides good classification performance if the number of samples is sufficiently large.
+  \end{itemize}
+
+  \vspace{1em}
+
+  \item \textbf{Disadvantages:}
+  \begin{itemize}
+    \item Selecting the best value of $k$ can be challenging.
+    \item Computationally expensive, although certain optimizations are possible.
+    \item Requires a large number of samples to achieve high accuracy.
+    \begin{itemize}
+      \item This limitation cannot be overcome without assuming a parametric distribution.
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide36
+
+\section{Distance Measures}
+%------------------------------------------------slide38
+\begin{frame}{Instance-Based Learner}
+
+\begin{itemize}
+    \item The main components required to construct an instance-based learner are:
+    \begin{itemize}
+        \item A distance metric to measure similarity between data points.
+        \item The number of nearest neighbors of the test instance to consider.
+        \item A weighting function (optional).
+        \item A method to determine the output based on the neighbors.
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide39
+\begin{frame}{Distance Measures}
+
+\begin{itemize}
+    \item \textbf{Minkowski Distance:}
+    \[
+    d(\mathbf{x}, \mathbf{x}') = \left( \sum_{i=1}^{n} |x_i - x'_i|^p \right)^{\frac{1}{p}}
+    \]
+    \begin{itemize}
+        \item For $p \geq 1$, this is a valid distance metric.
+        \item When $p = 2$, the Minkowski distance is equivalent to the Euclidean distance.
+        \item The Minkowski distance is also equal to the $L^p$ norm of $(\mathbf{x} - \mathbf{x}')$.
+    \end{itemize}
+
+    \item Recall the definition of the $L^p$ norm from linear algebra:
+    \[
+    \|\mathbf{x}\|_p = \sqrt[p]{|x_1|^p + \dots + |x_n|^p}.
+    \]
+    \begin{align*}
+        \text{Some common } L^p \text{ norms: } 
+        \begin{cases}
+            \|\mathbf{x}\|_1 &= \sum_{i=1}^n |x_i|, \\[0.5em]
+            \|\mathbf{x}\|_2 &= \sqrt{x_1^2 + \dots + x_n^2}, \\[0.5em]
+            \|\mathbf{x}\|_{\infty} &= \max \{|x_1|, |x_2|, \dots, |x_n|\}.
+        \end{cases}
+    \end{align*}
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide40
+\begin{frame}{Distance Measures}
+
+\begin{itemize}
+    \item \textbf{Euclidean Distance:}
+\end{itemize}
+
+\[
+d(\mathbf{x}, \mathbf{x}') = \sqrt{(x_1 - x'_1)^2 + \cdots + (x_d - x'_d)^2}.
+\]
+
+\begin{itemize}
+    \item \textbf{Distance Learning Methods:}
+    \begin{itemize}
+        \item \textbf{Weighted Euclidean Distance:}
+        \[
+        d_w(\mathbf{x}, \mathbf{x}') = 
+        \sqrt{w_1(x_1 - x'_1)^2 + \cdots + w_d(x_d - x'_d)^2}.
+        \]
+        \begin{itemize}
+            \item Large weight $w_i$ $\Rightarrow$ attribute $i$ is more important.
+            \item Small weight $w_i$ $\Rightarrow$ attribute $i$ is less important.
+            \item Zero weight $w_i$ $\Rightarrow$ attribute $i$ does not contribute to the distance.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide41
+\begin{frame}{Distance Measures}
+
+\begin{columns}
+    \column{0.5\textwidth}
+    \begin{center}
+        \textbf{$L_1$ (Manhattan) Distance:} \\[0.3em]
+        \[
+        d_1(\mathbf{I}_1, \mathbf{I}_2) = \sum_p \left| \mathbf{I}_1^p - \mathbf{I}_2^p \right|.
+        \]
+    \end{center}
+
+    \column{0.5\textwidth}
+    \begin{center}
+        \textbf{$L_2$ (Euclidean) Distance:} \\[0.3em]
+        \[
+        d_2(\mathbf{I}_1, \mathbf{I}_2) = 
+        \left( \sum_p (\mathbf{I}_1^p - \mathbf{I}_2^p)^2 \right)^{\frac{1}{2}}.
+        \]
+    \end{center}
+\end{columns}
+
+\vspace{0.8em}
+
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{pic/l1l2.png}
+\end{center}
+
+\end{frame}
+
+%------------------------------------------------slide42
+\begin{frame}{Distance Measures ($k = 1$)}
+
+\begin{columns}
+    \column{0.5\textwidth}
+    \begin{center}
+        \textbf{$L_1$ (Manhattan) Distance:} \\[0.3em]
+        \[
+        d_1(\mathbf{I}_1, \mathbf{I}_2) = \sum_p \left| \mathbf{I}_1^p - \mathbf{I}_2^p \right|.
+        \]
+        \vspace{0.5em}
+        \includegraphics[width=0.63\textwidth]{pic/l1.png}
+    \end{center}
+
+    \column{0.5\textwidth}
+    \begin{center}
+        \textbf{$L_2$ (Euclidean) Distance:} \\[0.3em]
+        \[
+        d_2(\mathbf{I}_1, \mathbf{I}_2) =
+        \left( \sum_p (\mathbf{I}_1^p - \mathbf{I}_2^p)^2 \right)^{\frac{1}{2}}.
+        \]
+        \vspace{0.5em}
+        \includegraphics[width=0.65\textwidth]{pic/l2.png}
+    \end{center}
+\end{columns}
+
+\end{frame}
+
+%------------------------------------------------slide43
+\begin{frame}{Distance Measures}
+
+\textbf{Cosine Distance (Angle-Based Similarity)}
+\begin{itemize}
+    \item Measures the angle between vectors; scale-invariant.
+    \item Often used for text or high-dimensional sparse data.
+    \item Note: \textbf{Not a true metric} (triangle inequality may fail).
+\end{itemize}
+
+\[
+d(\mathbf{x}, \mathbf{x}') = 1 - 
+\frac{\mathbf{x} \cdot \mathbf{x}'}{\|\mathbf{x}\|_2 \, \|\mathbf{x}'\|_2}
+\]
+
+\begin{center}
+    \includegraphics[width=0.42\textwidth]{pic/cosine.png}
+\end{center}
+
+\end{frame}
+
+
+%------------------------------------------------slide44
+\begin{frame}{Effect of Distance Measure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{pic/DistMeasEf.png}
+    \caption*{\scriptsize Effect of different distance measures on classification boundaries.}
+\end{figure}
+
+\vfill
+
+\begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=south west, xshift=0.01cm, yshift=0.15cm] at (current page.south west) {
+        \scriptsize Figures adapted from M. Soleymani, \textit{Machine Learning Slides}, Sharif University of Technology.
+    };
+\end{tikzpicture}
+
+\end{frame}
+
+%------------------------------------------------slide45
+\begin{frame}{Effect of Distance Measure}
+
+You can be quite creative in choosing the distance function.  
+For example, one can use \textit{bending energy}, which measures how much transformation is required to make one example resemble another.
+
+\vspace{0.8em}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{pic/s5.png}
+    \caption*{\scriptsize Example of deformation-based similarity using bending energy.}
+\end{figure}
+
+\end{frame}
+
+%------------------------------------------------slide47
+\section{kNN Regression}
+
+\begin{frame}{kNN Regression}
+
+\begin{itemize}
+    \item Let $\mathbf{x}'^{(1)}, \dots, \mathbf{x}'^{(k)}$ be the k-nearest neighbors of the query point $\mathbf{x}$,  
+    and let $y'^{(1)}, \dots, y'^{(k)}$ be their corresponding target values:
+    \[
+        \hat{y} = \frac{1}{k} \sum_{j=1}^k y'^{(j)}.
+    \]
+
+    \item Some challenges of kNN regression when fitting functions:
+    \begin{itemize}
+        \item Discontinuities in the estimated function.
+        \item For 1-NN: highly sensitive to noise (overfitting).
+        \item For $k > 1$: averaging reduces noise sensitivity but may lead to excessive smoothing,  
+        especially near the boundaries.
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide48
+\begin{frame}{kNN Regression}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.75\textwidth]{pic/knnR1.png}
+    \caption*{\scriptsize Figures adapted from Andrew Moore’s tutorial on “Instance-Based Learning”}
+\end{figure}
+
+\end{frame}
+
+%------------------------------------------------slide49
+\begin{frame}{kNN Regression: Example}
+
+\begin{itemize}
+    \item Suppose we have a dataset with a single feature uniformly distributed over $[0, 2\pi]$.
+    \item The true model is defined as:
+    \[
+        Y = 2 \sin(X) + \epsilon,
+    \]
+    where $\epsilon$ is a standard normal error term.
+    \item We simulate 200 observations and visualize the fitted model for $k = 1$.
+\end{itemize}
+
+\vspace{0.5em}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{pic/knnReg1.png}
+    \caption*{\scriptsize Example of $k$NN regression with $k = 1$.}
+\end{figure}
+
+\end{frame}
+
+%------------------------------------------------slide50
+\begin{frame}{kNN Regression: Example}
+
+\begin{itemize}
+    \item Results for $k = 2$ and $k = 10$.
+\end{itemize}
+
+\vspace{0.5em}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pic/knnReg2.png}
+    \caption*{\scriptsize Figures adapted from Andrew Moore’s tutorial on \textit{Instance-Based Learning}.}
+\end{figure}
+
+\end{frame}
+
+%------------------------------------------------slide51
+\begin{frame}{kNN Regression: Example}
+
+\begin{itemize}
+    \item As $k$ increases, the model becomes smoother.  
+    However, if $k$ is too large, it starts to deviate from the true underlying function.
+\end{itemize}
+
+\vspace{0.5em}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{pic/knnReg3.png}
+    \caption*{\scriptsize Figures adapted from Andrew Moore’s tutorial on \textit{Instance-Based Learning}.}
+\end{figure}
+
+\end{frame}
+
+%------------------------------------------------slide52
+\begin{frame}{kNN: Universal Approximation}
+
+As the number of training samples approaches infinity, the nearest neighbor method can approximate any function\textsuperscript{*}!
+
+\vspace{0.8em}
+
+\begin{columns}
+    \column{0.32\textwidth}
+    \includegraphics[width=\textwidth]{pic/function1.png}
+
+    \column{0.32\textwidth}
+    \includegraphics[width=\textwidth]{pic/function2.png}s
+
+    \column{0.32\textwidth}
+    \includegraphics[width=\textwidth]{pic/function3.png}
+\end{columns}
+
+\vspace{0.8em}
+
+The kNN regression fits a piecewise constant function (green),  
+which approximates the true curve (blue) by averaging the nearby training samples (black).
+
+\vspace{0.8em}
+
+\scriptsize{\textsuperscript{*} Subject to several technical conditions: only continuous functions on a compact domain, with assumptions on the spacing of training points, etc.}
+
+\end{frame}
+
+%------------------------------------------------slide53
+\begin{frame}{Locally Weighted Linear Regression}
+
+\begin{itemize}
+    \item For each test sample, the model produces a linear approximation of the target function within a local region.
+    \item Instead of computing the output via weighted averaging (as in kernel regression),  
+    we fit a parametric function locally:
+\end{itemize}
+
+\vspace{0.8em}
+
+\[
+\hat{y} = f\!\left(\mathbf{x}, \mathbf{x}^{(1)}, y^{(1)}, \ldots, \mathbf{x}^{(n)}, y^{(n)}\right)
+\]
+
+\[
+\hat{y} = f(\mathbf{x}; \mathbf{w}) = w_0 + w_1 x_1 + \cdots + w_d x_d
+\]
+
+\[
+J(\mathbf{w}) = \sum_{i \in \mathcal{N}_k(\mathbf{x})} \left( y^{(i)} - \mathbf{w}^T \mathbf{x}^{(i)} \right)^2
+\]
+
+\vspace{0.8em}
+
+\small{
+The weight vector $\mathbf{w}$ is computed separately for each test sample.
+}
+
+\end{frame}
+
+%------------------------------------------------slide54
+\begin{frame}{Locally Weighted Linear Regression: Example}
+
+\begin{columns}
+    \column{0.32\textwidth}
+        \includegraphics[width=0.9\textwidth]{pic/lr1.png}
+
+    \column{0.32\textwidth}
+        \includegraphics[width=0.9\textwidth]{pic/lr2.png}
+
+    \column{0.32\textwidth}
+        \includegraphics[width=0.9\textwidth]{pic/lr3.png}
+\end{columns}
+
+\vspace{0.6em}
+
+\centering
+\scriptsize
+$\sigma = \tfrac{1}{32}$ of x-axis width \hspace{3em}
+$\sigma = \tfrac{1}{16}$ of x-axis width \hspace{3em}
+$\sigma = \tfrac{1}{8}$ of x-axis width
+
+\vspace{1.2em}
+
+\normalsize
+\begin{itemize}
+    \item Produces smoother and more accurate results than weighted kNN regression.
+\end{itemize}
+
+\end{frame}
+
+%------------------------------------------------slide55
+\begin{frame}{Vizier}
+\begin{center}
+\includegraphics[width=0.9\textwidth]{pic/vizier.png}
+\vspace{1em}
+\href{http://www.cs.cmu.edu/~asm/vizier/}{www.cs.cmu.edu/\textasciitilde awm/vizier/}
+\end{center}
+\end{frame}
+%------------------------------------------------slide42
+\section{References}
+
+\begin{frame}{Contributions}
+\begin{itemize}
+\item \textbf{These slides are authored by:}
+\medskip
+\begin{itemize}
+    \setlength{\itemsep}{10pt} % Adjust the value to control the spacing
+    \item \href{https://github.com/Danial-Gharib}{Danial Gharib}
+    \item \href{https://github.com/Mahan-Bayhaghi}{Mahan Bayhaghi}
+    \item \href{https://github.com/jefri021}{Erfan Jafari}
+    \item \href{https://github.com/Mahdi-Aghaei}{Mahdi Aghaei}
+\end{itemize}
+\end{itemize}
+
+\end{frame}
+%------------------------------------------------slide43
+\begin{frame}[allowframebreaks]
+    \bibliographystyle{ieeetr}
+    \bibliography{ref}
+    \nocite{*}
+\end{frame}
+
+\end{document}

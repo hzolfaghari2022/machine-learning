@@ -1,0 +1,566 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A Beamer template for University of Wollongong     %
+% Based on THU beamer theme                          %
+% Author: Qiuyu Lu                                   %
+% Date: July 2024                                    %
+% LPPL Licensed.                                     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Customized for Sharif University of Technology     %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[serif, aspectratio=169]{beamer}
+%\documentclass[serif]{beamer}  % for 4:3 ratio
+\usepackage[T1]{fontenc} 
+\usepackage{fourier} % see "http://faq.ktug.org/wiki/uploads/MathFonts.pdf" for other options
+\usepackage{hyperref}
+\usepackage{latexsym,amsmath,xcolor,multicol,booktabs,calligra}
+\usepackage{graphicx,pstricks,listings,stackengine}
+\usepackage{lipsum}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric} % Add this to include ellipse shapes
+\usepackage{amsmath}
+\usepackage{pgfplots}  % For plots
+\usepackage{amsmath}   % For equations
+\usepackage{array}     % For tables
+% in your preamble (once)
+\usepackage{booktabs,tabularx,makecell}
+\renewcommand\theadfont{\normalsize\bfseries}
+\pgfplotsset{compat=1.16}
+
+% \usetikzlibrary{positioning}
+
+
+\author{Ali Sharifi-Zarchi}
+\title{Machine Learning (CE 40717)}
+\subtitle{Fall 2024}
+\institute{
+    CE Department \\
+    Sharif University of Technology
+}
+%\date{\small \today}
+% \usepackage{UoWstyle}
+\usepackage{SUTstyle}
+
+% defs
+\def\cmd#1{\texttt{\color{red}\footnotesize $\backslash$#1}}
+\def\env#1{\texttt{\color{blue}\footnotesize #1}}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{RGB}{153,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{halfgray}{gray}{0.55}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\bfseries\color{deepblue},
+    emphstyle=\ttfamily\color{deepred},    % Custom highlighting style
+    stringstyle=\color{deepgreen},
+    numbers=left,
+    numberstyle=\small\color{halfgray},
+    rulesepcolor=\color{red!20!green!20!blue!20},
+    frame=shadowbox,
+}
+
+\begin{document}
+
+\begin{frame}
+	\titlepage
+	\vspace*{-0.6cm}
+	\begin{figure}[htpb]
+		\begin{center}
+			\includegraphics[keepaspectratio, scale=0.25]{pic/sharif-main-logo.png}
+		\end{center}
+	\end{figure}
+\end{frame}
+
+\begin{frame}    
+	\tableofcontents[sectionstyle=show,
+		subsectionstyle=show/shaded/hide,
+	subsubsectionstyle=show/shaded/hide]
+\end{frame}
+
+% ============================ Introduction ============================ 
+\section{Introduction}
+
+\begin{frame}{Why Neural Networks?}
+	\begin{itemize}
+		\item We can find explicit formulas for some problems (no machine learning)
+		      \begin{itemize}
+		      	\item $\Delta x = \dfrac{1}{2}a\cdot t^2 + v_0 \cdot t$
+		      \end{itemize}
+		\item We can model some problems by assuming simple relationships (classical machine learning)
+		      \begin{itemize}
+		      	\item House price as a linear function of its features
+		      	\item $y = a_1 \cdot x_1 + a_2 \cdot x_2 + \ldots + a_p \cdot x_p$
+		      \end{itemize}
+		\item How can we classify these images?
+		      \begin{center}
+		      	\includegraphics[keepaspectratio, scale=0.1]{pic/1/fashion-mnist.png}
+		      \end{center}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Why Neural Networks? Cont.}
+	\begin{picture}(0,0)
+		\put(200, -150){\includegraphics[width=7cm]{pic/1/sneakers.png}}
+	\end{picture}
+	    
+	\begin{itemize}
+		\item \textbf{No explicit formula} exists to recognize a sneaker
+		\item We intuitively recognize any sneaker
+		\item Our brains use a\textbf{ complex function} for this recognition
+		\item \textbf{Deep neural networks} can learn this complex function
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Modelling the Brain}
+    \centering
+    \includegraphics[width=7cm]{pic/1/brain_neuron.png}
+	\begin{itemize}
+		\item Building units are neurons.
+		\item \textbf{Dendrite:} Receives signals from other neurons.
+		\item \textbf{Soma:} Processes the information
+        \item \textbf{Axon:} Transmits the output of this neuron
+        \item \textbf{Synapse:} Point of connection to other neurons
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{McCulloch-Pitts Neurons}
+    \centering
+	\includegraphics[width=10cm]{pic/1/MP_neuron.png}
+	\begin{equation*}
+	    y = 
+	    \begin{cases}
+            1 & \text{if } \sum_i {w_i x_i} - T \ge 0 \\
+            0 & \text{otherwise.}
+        \end{cases}
+	\end{equation*}
+\end{frame}
+
+
+\begin{frame}{Perceptron Reminder}
+    \begin{minipage}{0.5\textwidth}
+        The building block of each neural network is the perceptron:
+        \begin{itemize}
+            \item $\{x_1, x_2, \dots, x_k\}$ : input features
+            \item $\{w_1, w_2, \dots, w_k\}$ : feature weights
+            \item $b$ : bias term
+            \item $\sigma(\cdot)$ : activation function
+            \item $y$ : output of the neuron
+        \end{itemize}
+    \end{minipage}%
+    \begin{minipage}{0.5\textwidth}
+        \begin{figure}[htp]
+            \centering
+            \begin{subfigure}{\textwidth}
+                \includegraphics[width=6cm]{pic/1/neuron.png}
+            \end{subfigure}
+            
+            \skip
+            
+            \begin{subfigure}{\textwidth}
+                \includegraphics[width=4cm]{pic/1/perceptron_plot.png}
+            \end{subfigure}
+            
+            \caption{Main caption}
+        \end{figure}
+    \end{minipage}
+\end{frame}
+
+
+
+% ============================ Multi-Layer Perceptron (MLP) ============================ 
+\section{Multi-Layer Perceptron (MLP)}
+
+\begin{frame}{Example: Perceptron as a Boolean Gate}
+    \centering
+    \includegraphics[width=14cm]{pic/2/boolean_operator.png}
+	\begin{itemize}
+		\item A perceptron can model any simple binary Boolean gate.
+		\item MLPs are universal Boolean functions.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Example: MLP for Complex Patterns}
+	\begin{itemize}
+		\item What network to learn this area?
+		\item Example is adapted from \cite{cmu_deep_learning_2023}.
+		      \begin{figure}[htpb]
+		      	\begin{center}
+		      		\includegraphics[keepaspectratio, scale=0.25]{pic/2/ex1.png}
+		      	\end{center}
+		      \end{figure}
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Example: MLP for Complex Patterns Cont.}
+	\begin{figure}[htpb]
+		\begin{center}
+			\includegraphics[keepaspectratio, scale=0.25]{pic/2/ex2.png}
+		\end{center}
+	\end{figure}
+\end{frame}
+
+
+\begin{frame}{Example: MLP for Complex Patterns Cont.}
+	\begin{figure}[htpb]
+		\begin{center}
+			\includegraphics[keepaspectratio, scale=0.25]{pic/2/ex3.png}
+		\end{center}
+	\end{figure}
+\end{frame}
+
+
+\begin{frame}{Example: MLP for Complex Patterns Cont.}
+	\begin{figure}[htpb]
+		\begin{center}
+			\includegraphics[keepaspectratio, scale=0.25]{pic/2/ex4.png}
+		\end{center}
+	\end{figure}
+\end{frame}
+
+
+\begin{frame}{Example: MLP for Complex Patterns Cont.}
+	\begin{figure}[htpb]
+		\begin{center}
+			\includegraphics[keepaspectratio, scale=0.25]{pic/2/ex5.png}
+		\end{center}
+	\end{figure}
+\end{frame}
+
+
+\begin{frame}{Example: MLP for Complex Patterns Cont.}
+    \begin{figure}[!htb]
+        \minipage{0.5\textwidth}
+          \includegraphics[width=\linewidth]{pic/2/ex6.png}
+        \endminipage\hfill
+        \minipage{0.5\textwidth}
+          \includegraphics[width=\linewidth]{pic/2/ex7.png}
+        \endminipage
+    \end{figure}
+\end{frame}
+
+
+
+% in your frame
+\begin{frame}{Neural Networks for Region Classification}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{table}
+  \centering
+  \begin{tabular}{%
+    >{\raggedright\arraybackslash}p{.22\linewidth}%
+    >{\raggedright\arraybackslash}p{.22\linewidth}%
+    >{\raggedright\arraybackslash}p{.34\linewidth}%
+    >{\centering\arraybackslash}p{.16\linewidth}%
+  }
+    \toprule
+    \thead{Layer Type} & \thead{Decision Region} & \thead{Interpretation} & \thead{Visualization} \\
+    \midrule
+    Single layer (perceptron) 
+      & Half-space 
+      & Linear separator defined by a hyperplane $w^\top x + b = 0$
+      & \raisebox{-0.5\height}{\includegraphics[height=0.9cm]{pic/1/perceptron_plot.png}} \\
+    Two layers (1 hidden) 
+      & Closed, convex regions 
+      & Intersections of half-spaces $\Rightarrow$ convex polytopes 
+      & \raisebox{-0.5\height}{\includegraphics[height=0.9cm]{pic/2/ex7.png}} \\
+    Three layers (2+ hidden) 
+      & Arbitrary (finite unions) 
+      & Union of polytopes; universal approximation of regions 
+      & \raisebox{-0.5\height}{\includegraphics[height=0.9cm]{pic/5/polytopes.png}} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+\end{frame}
+
+
+
+
+\begin{frame}{Example: Composing Neural Networks}
+\begin{columns}[T]
+    %---------------- LEFT ----------------%
+    \begin{column}{0.45\textwidth}
+        \begin{itemize}
+            \item Each layer forms a simple piecewise-linear function (ReLU units).
+            \item Network 1 maps $x \rightarrow y$; Network 2 maps $y \rightarrow y'$.
+            \item Composing layers increases the number of linear regions.
+            \item The full MLP produces a more complex nonlinear function than either layer alone.
+        \end{itemize}
+    \end{column}
+
+    %---------------- RIGHT ----------------%
+    \begin{column}{0.55\textwidth}
+        \centering
+        \includegraphics[width=\linewidth,height=0.38\textheight,keepaspectratio]{pic/5/nn_ex1.png}\\[0.2cm]
+        \includegraphics[width=\linewidth,height=0.38\textheight,keepaspectratio]{pic/5/nn_ex2.png}
+    \end{column}
+\end{columns}
+\end{frame}
+
+
+
+
+\begin{frame}{MLP Capacity}
+	\begin{columns}
+		\begin{column}{0.6\textwidth}
+			\begin{itemize}
+				\item Increasing \textbf{width and depth} allow us to approximate \textbf{complex decision boundaries}
+				\item An \textbf{activation function} makes a neuron’s output \textbf{non-linear}, allowing the network to learn complex pattern
+				\item It is \textbf{not limited} to Boolean or step functions
+				\item With appropriate activation functions, neural networks can \textbf{approximate any real-valued function} (More details later)
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.4\textwidth}
+			\includegraphics[width=\textwidth]{pic/2/activations.png} \\
+			\begin{center}
+				{\scriptsize Adapted from \href{https://sefiks.com/2020/02/02/dance-moves-of-deep-learning-activation-functions/}{Sefiks}}
+			\end{center}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+
+% ============================ Neural Networks ============================ 
+
+
+
+\section{Neural Networks}
+\begin{frame}{Single Hidden Layer Neural Network}
+	\minipage{.58\textwidth}
+	\begin{itemize}
+		\item Hidden layer pre-activation: $$a_i(x) = b^{(1)}_i + \sum_j W^{(1)}_{ij} \cdot x_j$$
+		\item Weight between neuron $i$ and $j$ in layer $\ell$: \(W^{(\ell)}_{ij}\)
+		\item Activated hidden layer: $$h^{(1)}(x) = \sigma^{(1)}(a(\mathbf{x}))$$
+		\item Output layer: $$ o(\mathbf{x}) = \sigma^{(2)}\left(\mathbf{b}^{(2)} + \mathbf{W}^{(2)}h^{(1)}(\ma\mathbf{x}) \right) $$
+	\end{itemize}
+	\endminipage
+	\hfill
+	\minipage{.4\textwidth}
+	\begin{figure}[bh]
+		\includegraphics[width=\linewidth]{pic/2/single-hidden_nn.png}
+	\end{figure}
+	\endminipage
+\end{frame}
+
+
+\begin{frame}{Multi-Hidden Layer Neural Network}
+	\minipage{.4\textwidth}
+	\begin{itemize}
+		\item Let $h^0_i = x_i$ for $i \in \{1, 2, \ldots, n  \}$
+		\item For $\ell \in \{1, \ldots, L \}$:
+		      $$a^{(\ell)}_j = b^{(\ell-1)}_j + \sum_i W^{(\ell-1)}_{ij}\cdot h^{(\ell-1)}_i$$
+		      $$h^{(\ell)}_j = \sigma^{(\ell)}(a^{(\ell)}_j)$$
+		      
+		\item Learnable parameters:
+		      $$b^{(\ell)}_j, W^{(\ell)}_{ij}$$
+		      
+		\item Number of learnable parameters:
+		      $$(n+1)m_1 + (m_1 + 1)m_2 + ... + (m_L + 1)k$$
+	\end{itemize}
+	\endminipage
+	\hfill
+	\minipage{.6\textwidth}
+	\begin{figure}[bh]
+		\includegraphics[width=\linewidth]{pic/2/multi-hidden-nn.png}
+	\end{figure}
+	\endminipage
+\end{frame}
+
+\begin{frame}[t]{Deep Neural Network Architecture}
+	\begin{itemize}
+		\item More than a few hidden layers: \textbf{Deep Neural Network (DNN)}
+		\item Designing neural network architecture is \textbf{more of an art than a science}.
+		      \begin{figure}[bh]
+		      	\includegraphics[keepaspectratio, scale=0.3]{pic/3/huge-nn.png}
+		      \end{figure}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Network Width and Depth}
+	\begin{columns}
+		\begin{column}{0.6\textwidth}
+			\begin{itemize}
+				\item \textbf{Width:} More neurons, more complexity
+				\item \textbf{Depth:} More layers, more abstraction
+				\item \textbf{Balance:} 
+				      \begin{itemize}
+				      	\item Too narrow/shallow: risk of underfitting
+				      	\item Too wide/deep: risk of overfitting
+				      \end{itemize}
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{center}
+				\includegraphics[keepaspectratio, width=\textwidth]{pic/3/complexity.png} \\
+				{\scriptsize Adapted from \href{https://towardsdatascience.com/overfitting-and-underfitting-principles-ea8964d9c45c}{Towards Data Science}}
+			\end{center}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+% ============================ Training Neural Networks ============================ 
+\section{Neural Networks as Universal Approximators}
+
+\begin{frame}{Universal Approximation Theorem}
+	\textbf{Key Concept}
+	\begin{itemize}
+		\item The Universal Approximation Theorem states that a feedforward neural network with:
+		\begin{itemize}
+			\item A single hidden layer
+			\item Sufficient number of hidden neurons
+			\item Appropriate activation functions (e.g., sigmoid)
+		\end{itemize}
+		Can approximate any continuous function on a \textbf{compact subset} of $\mathbb{R}^n$ to any desired accuracy.
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}{Understanding Compact Sets}
+	\textbf{What is a Compact Set?}
+	\begin{itemize}
+		\item In the context of the Universal Approximation Theorem, approximation is guaranteed on a \textbf{compact subset} of $\mathbb{R}^n$.
+		\item A set is compact if it is both:
+		\begin{itemize}
+			\item \textbf{Bounded}: Enclosed within a finite space.
+			\item \textbf{Closed}: Contains all its boundary points.
+		\end{itemize}
+		\item Compact sets ensure certain mathematical properties that enable reliable function approximation by the MLP within that region.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Breaking Down Complex Functions}
+	\begin{itemize}
+		\item Idea: Complex functions can be decomposed into multiple smaller parts, each represented by a simpler function.
+		\item By combining a series of simpler functions (like square pulses), the target function can be closely approximated.
+	\end{itemize}
+
+		\begin{figure}[h!]
+		\centering
+		\begin{minipage}{0.43\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{pic/5/approximator-1.png}
+			\label{fig:fig1}
+		\end{minipage} \hfill
+		%		\hspace{0.02\textwidth} % Space before the line
+		%		\vrule width 0.5pt % Thickness of the line
+		%		\hspace{0.02\textwidth} % Space after the line
+		\begin{minipage}{0.44\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{pic/5/approximator-2.png}
+			\label{fig:fig2}
+		\end{minipage}
+	\end{figure}
+	
+	\vfill
+	\begin{tikzpicture}[remember picture,overlay]
+		\node[anchor=south west, xshift=0.1cm, yshift=0.22cm] at (current page.south west) {
+			\tiny Figure adapted from Niranjan Kumar, Illustrative Proof of Universal Approximation Theorem
+		};
+	\end{tikzpicture}
+	
+\end{frame}
+
+\begin{frame}{MLPs as Universal Approximators}
+	\begin{itemize}
+		\item By constructing a series of these \texttt{Square Pulse} functions, we can approximate any continuous function mapping from input to output.
+		\item A simple 3-unit MLP with a summing output unit can generate a square pulse.
+		\item Therefore, an MLP with enough units and the right configuration is a universal approximator!
+		
+	\end{itemize}
+	
+	 \begin{figure}
+		        \includegraphics[width=0.38\textwidth]{pic/5/Puls-Generator.png}
+		        \label{fig:puls}
+	\end{figure}
+
+	 \vfill
+	 \begin{tikzpicture}[remember picture,overlay]
+		        \node[anchor=south west, xshift=0.1cm, yshift=0.22cm] at (current page.south west) {
+			            \tiny Figure adapted from Dr. Mahdieh Soleymani Baghshah, Deep Learning Course
+			        };
+	  \end{tikzpicture}
+	
+\end{frame}
+
+
+% ============================ Training Neural Networks ============================ 
+\section{Training Neural Networks}
+\begin{frame}{Training Phases}
+	\begin{itemize}
+		\item \textbf{Initialize weights and biases}: These values control how the network initially processes information (more details later)
+		\item \textbf{Forward pass}: Pass the input through the network to get an output
+		\item \textbf{Calculate the error}: Compare the network's output to the correct answer to measure the difference (called the 'loss' -- more details later) 
+		\item \textbf{Backpropagation}: Use the loss value to adjust the weights and biases to improve the network's accuracy
+	\end{itemize}
+	\begin{figure}[bh]
+		\includegraphics[keepaspectratio, scale=0.2]{pic/4/training-phases.png}
+	\end{figure}
+\end{frame}
+
+\begin{frame}[t]{Forward Propagation}
+	\begin{itemize}
+		\item This is the pass where we send input data through the network to make a prediction (likely inaccurate at first).
+		\item The prediction is made by calculating weighted sums and applying an activation function in each layer
+		      $$ o(x) = h^{(L)} = \sigma (a^{L}) = \sigma^{(L)}\left( b^{(L-1)} + W^{(L-1)}  \sigma^{(L-1)}\left( \ldots \sigma^{(1)}(b^{(1)} + W^{(1)}  x)  \ldots \right) \right) $$
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Forward Propagation Cont.}
+	\begin{figure}[h]
+		\includegraphics[width=\linewidth]{pic/4/tensorflow0.png}\\
+		{\scriptsize Before making predictions. Adapted from \href{playground.tensorflow.org}{TensorFlow playground: Daniel Smilkov and Shan Carter}.}
+	\end{figure}
+\end{frame}
+
+\begin{frame}[t]{Forward Propagation Cont.}
+	\begin{itemize}
+		\item The goal is to adjust the network’s parameters to improve the predictions
+		\item The loss is calculated after the forward pass, indicating how far off our predictions are from the true values
+		      \begin{figure}[bh]
+		      	\centering
+		      	\includegraphics[width=\linewidth]{pic/4/tensorflow2.png} \\
+		      	{\scriptsize Loss values for predictions. Adapted from \href{playground.tensorflow.org}{TensorFlow playground: Daniel Smilkov and Shan Carter}.}
+		      \end{figure}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{BackPropagation and Parameter Update}
+	\begin{itemize}
+		\item The network uses the \textbf{loss} to adjust its \textbf{weights and biases} through a process known as \textbf{backpropagation}
+		\item Backpropagation calculates how much weights should change to reduce the error
+		\item This will be explained in more detail in the following lecture
+		      \begin{figure}[bh]
+		      	\centering
+		      	\includegraphics[width=\linewidth]{pic/4/tensorflow3.png} \\
+		      	{\scriptsize Predictions improve as the weights get updated. Adapted from \href{playground.tensorflow.org}{TensorFlow playground: Daniel Smilkov and Shan Carter}.}
+		      \end{figure}
+	\end{itemize}
+\end{frame}
+
+
+% ============================ References ============================ 
+\section{References}
+
+\begin{frame}{Contributions}
+	\textbf{These slides are authored by:}
+	\begin{itemize}
+		\item Sogand Salehi
+		\item Erfan Sobhaei
+	\end{itemize}
+	    
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]
+	\bibliographystyle{ieeetr}
+	\bibliography{ref.bib}
+	\nocite{*}
+\end{frame}
+
+
+\end{document}
