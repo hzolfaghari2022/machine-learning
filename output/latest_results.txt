@@ -1,0 +1,20 @@
+Run: 2026-09-02 19:11:41 UTC
+Accuracy: 0.9467
+
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        50
+  versicolor       0.90      0.94      0.92        50
+   virginica       0.94      0.90      0.92        50
+
+    accuracy                           0.95       150
+   macro avg       0.95      0.95      0.95       150
+weighted avg       0.95      0.95      0.95       150
+
+Confusion matrix:
+[[50  0  0]
+ [ 0 47  3]
+ [ 0  5 45]]
+
+Best parameters:
+{'randomforestclassifier__criterion': 'gini', 'randomforestclassifier__max_depth': None, 'randomforestclassifier__min_samples_leaf': 1}
